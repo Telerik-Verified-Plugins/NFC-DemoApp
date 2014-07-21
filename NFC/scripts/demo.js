@@ -35,13 +35,14 @@
                     alert("Already listening");
                 } else {
 	                isListening = true;
+                    // in production you probably want to wire up this listener when Cordova's deviceready event fires
                     nfc.addNdefListener (
                         app.demoService.viewModel.nfcHandler,
                         function () { // success callback
                             app.demoService.viewModel.appendOutput("You can now scan a tag.");
                         },
                         function (error) { // error callback
-                            app.demoService.viewModel.appendOutput("Error: " + + JSON.stringify(error));
+                            app.demoService.viewModel.appendOutput("Error: " + JSON.stringify(error));
                         }
                     );
                 }

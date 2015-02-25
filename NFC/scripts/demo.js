@@ -7,7 +7,7 @@
     DemoViewModel = kendo.data.ObservableObject.extend({
 
         appendOutput: function (what) {
-			var outputDiv = document.querySelector('#output');
+			      var outputDiv = document.querySelector('#output');
             outputDiv.innerHTML = what;
         },
 
@@ -101,6 +101,15 @@
                 nfc.unshare(
                     this.onSuccess,
                     this.onError
+                );
+            }
+        },
+
+        checkNfcEnabled: function () {
+            if (!this.checkSimulator()) {
+                nfc.enabled(
+                    function() {alert('yes!')},
+                    function(msg) {alert(msg)}
                 );
             }
         },

@@ -48,6 +48,12 @@
         data-model="app.demoService.viewModel">
 
         <div class="demo">
+            <h3 class="hassubtitle">Check availability</h3>
+            <div class="subtitle">
+                For Android only. Error callback message is NO_NFC (no hardware support) or NFC_DISABLED (supported but disabled).
+            </div>
+            <button data-role="button" class="button" data-bind="click: checkNfcEnabled">NFC enabled?</button>
+
             <h3>Read</h3>
             <button data-role="button" class="button" data-bind="click: startListening">Start listening</button>
             <button data-role="button" class="button" data-bind="click: stopListening">Stop listening</button>

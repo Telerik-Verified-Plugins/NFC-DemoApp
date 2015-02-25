@@ -41,11 +41,13 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
     private static final String REGISTER_DEFAULT_TAG = "registerTag";
     private static final String REMOVE_DEFAULT_TAG = "removeTag";
     private static final String WRITE_TAG = "writeTag";
+    private static final String MAKE_READ_ONLY = "makeReadOnly";
     private static final String ERASE_TAG = "eraseTag";
     private static final String SHARE_TAG = "shareTag";
     private static final String UNSHARE_TAG = "unshareTag";
     private static final String HANDOVER = "handover"; // Android Beam
     private static final String STOP_HANDOVER = "stopHandover";
+    private static final String ENABLED = "enabled";
     private static final String INIT = "init";
 
     private static final String NDEF = "ndef";
@@ -106,6 +108,9 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
         } else if (action.equalsIgnoreCase(WRITE_TAG)) {
             writeTag(data, callbackContext);
 
+        } else if (action.equalsIgnoreCase(MAKE_READ_ONLY)) {
+            makeReadOnly(callbackContext);
+
         } else if (action.equalsIgnoreCase(ERASE_TAG)) {
             eraseTag(callbackContext);
 
@@ -123,6 +128,11 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
 
         } else if (action.equalsIgnoreCase(INIT)) {
             init(callbackContext);
+
+        } else if (action.equalsIgnoreCase(ENABLED)) {
+            // status is checked before every call
+            // if code made it here, NFC is enabled
+            callbackContext.success(STATUS_NFC_OK);
 
         } else {
             // invalid action
@@ -215,7 +225,7 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
         };
         writeNdefMessage(new NdefMessage(records), tag, callbackContext);
     }
-    
+
     private void writeTag(JSONArray data, CallbackContext callbackContext) throws JSONException {
         if (getIntent() == null) {  // TODO remove this and handle LostTag
             callbackContext.error("Failed to write tag, received null intent");
@@ -265,6 +275,62 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
                     callbackContext.error(e.getMessage());
                 } catch (IOException e) {
                     callbackContext.error(e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void makeReadOnly(final CallbackContext callbackContext) throws JSONException {
+
+        if (getIntent() == null) { // Lost Tag
+            callbackContext.error("Failed to make tag read only, received null intent");
+            return;
+        }
+
+        final Tag tag = savedIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if (tag == null) {
+            callbackContext.error("Failed to make tag read only, tag is null");
+            return;
+        }
+
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean success = false;
+                String message = "Could not make tag read only";
+
+                Ndef ndef = Ndef.get(tag);
+
+                try {
+                    if (ndef != null) {
+
+                        ndef.connect();
+
+                        if (!ndef.isWritable()) {
+                            message = "Tag is not writable";
+                        } else if (ndef.canMakeReadOnly()) {
+                            success = ndef.makeReadOnly();
+                        } else {
+                            message = "Tag can not be made read only";
+                        }
+
+                    } else {
+                        message = "Tag is not NDEF";
+                    }
+
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to make tag read only", e);
+                    if (e.getMessage() != null) {
+                        message = e.getMessage();
+                    } else {
+                        message = e.toString();
+                    }
+                }
+
+                if (success) {
+                    callbackContext.success();
+                } else {
+                    callbackContext.error(message);
                 }
             }
         });
@@ -385,10 +451,10 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
 
                 if (nfcAdapter != null) {
                     try {
-                        nfcAdapter.disableForegroundDispatch(getActivity());                        
+                        nfcAdapter.disableForegroundDispatch(getActivity());
                     } catch (IllegalStateException e) {
                         // issue 125 - user exits app with back button while nfc
-                        Log.w(TAG, "Illegal State Exception stopping NFC. Assuming application is terminating.");                        
+                        Log.w(TAG, "Illegal State Exception stopping NFC. Assuming application is terminating.");
                     }
                 }
             }
@@ -409,7 +475,7 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
                     nfcAdapter.setOnNdefPushCompleteCallback(NfcPlugin.this, getActivity());
                     try {
                         nfcAdapter.setBeamPushUris(uris, getActivity());
-                        
+
                         PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
                         result.setKeepCallback(true);
                         handoverCallback = callbackContext;
@@ -626,7 +692,7 @@ public class NfcPlugin extends CordovaPlugin implements NfcAdapter.OnNdefPushCom
         super.onPause(multitasking);
         if (multitasking) {
             // nfc can't run in background
-            stopNfc();            
+            stopNfc();
         }
     }
 

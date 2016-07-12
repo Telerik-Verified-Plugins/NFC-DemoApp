@@ -7,7 +7,7 @@
   "DisplayName": "NFC plugin demo",
   "Author": "Telerik",
   "Description": "NFC",
-  "BundleVersion": "1.0",
+  "BundleVersion": "1.0.1",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [
     "1",
@@ -23,9 +23,8 @@
   "ProjectTypeGuids": "{070BCB52-5A75-4F8C-A973-144AF0EAFCC9}",
   "FrameworkVersion": "4.0.0",
   "CorePlugins": [
-    "com.chariotsolutions.nfc.plugin@0.6.6",
+    "com.chariotsolutions.nfc.plugin@0.6.6.1",
     "cordova-plugin-console",
-    "cordova-plugin-crosswalk-webview@1.2.0",
     "cordova-plugin-device",
     "cordova-plugin-dialogs",
     "cordova-plugin-network-information",

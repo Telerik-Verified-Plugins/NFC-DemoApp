@@ -45,6 +45,11 @@
                             app.demoService.viewModel.appendOutput("Error: " + JSON.stringify(error));
                         }
                     );
+                    nfc.addTagDiscoveredListener (
+                      function(result) {
+                        alert(JSON.stringify(result));
+                      }
+                    );
                 }
             }
         },

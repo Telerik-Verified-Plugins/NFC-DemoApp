@@ -7,7 +7,7 @@
   "DisplayName": "NFC plugin demo",
   "Author": "Telerik",
   "Description": "NFC",
-  "BundleVersion": "1.0.1",
+  "BundleVersion": "1.0.2",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [
     "1",
@@ -21,16 +21,16 @@
   "WP8PublisherID": "{5e9a20dc-9a6e-4951-b773-084f56faef48}",
   "WP8ProductID": "{0613d0fb-0d00-4726-87f3-061cd7e44eab}",
   "ProjectTypeGuids": "{070BCB52-5A75-4F8C-A973-144AF0EAFCC9}",
-  "FrameworkVersion": "4.0.0",
+  "FrameworkVersion": "5.0.0",
   "CorePlugins": [
-    "com.chariotsolutions.nfc.plugin@0.6.6.1",
     "cordova-plugin-console",
     "cordova-plugin-device",
     "cordova-plugin-dialogs",
     "cordova-plugin-network-information",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
-    "cordova-plugin-vibration"
+    "cordova-plugin-vibration",
+    "com.chariotsolutions.nfc.plugin@0.6.6.2"
   ],
   "AndroidPermissions": [
     "android.permission.VIBRATE",

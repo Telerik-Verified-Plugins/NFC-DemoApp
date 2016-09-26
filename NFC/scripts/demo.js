@@ -11,22 +11,8 @@
             outputDiv.innerHTML = what;
         },
 
-        nfcHandler: function (nfcEvent) {
-            var tag = nfcEvent.tag;
-            var ndefMessage = tag.ndefMessage;
-            var nfcResult = "";
-            for (var i=0; i < ndefMessage.length; i++) {
-                if (i>0) {
-                    nfcResult += "<br/>";
-                }
-                var payload = nfc.bytesToString(ndefMessage[i].payload);
-                if (ndefMessage[i].type == 84) {
-                    // for messages, strip the language prefix
-                    payload = payload.substring(3);
-                }
-                nfcResult += payload;
-            }
-            app.demoService.viewModel.appendOutput("Scanned: " + nfcResult);
+        nfcHandler: function (result) {
+          alert(JSON.stringify(result));
         },
 
         startListening: function () {
@@ -36,18 +22,13 @@
                 } else {
 	                isListening = true;
                     // in production you probably want to wire up this listener when Cordova's deviceready event fires
-                    nfc.addNdefListener (
-                        app.demoService.viewModel.nfcHandler,
-                        function () { // success callback
-                            app.demoService.viewModel.appendOutput("You can now scan a tag.");
-                        },
-                        function (error) { // error callback
-                            app.demoService.viewModel.appendOutput("Error: " + JSON.stringify(error));
-                        }
-                    );
                     nfc.addTagDiscoveredListener (
-                      function(result) {
-                        alert(JSON.stringify(result));
+                      app.demoService.viewModel.nfcHandler,
+                      function () { // success callback
+                          app.demoService.viewModel.appendOutput("You can now scan a tag.");
+                      },
+                      function (error) { // error callback
+                          app.demoService.viewModel.appendOutput("Error: " + JSON.stringify(error));
                       }
                     );
                 }
@@ -60,7 +41,7 @@
                     alert("Wasn't listening");
                 } else {
 	                isListening = false;
-                    nfc.removeNdefListener(
+                    nfc.removeTagDiscoveredListener(
                         app.demoService.viewModel.nfcHandler,
                         function () { // success callback
                             app.demoService.viewModel.appendOutput("Stopped listening.");
